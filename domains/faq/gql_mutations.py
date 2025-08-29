@@ -16,7 +16,7 @@ class FaqMutations:
     new_faq = Faq(
       question=gql_input.question,
       answer=gql_input.answer,
-      order_index=gql_input.order_index,
+      index=gql_input.index,
     )
     db.session.add(new_faq)
     db.session.commit()
@@ -24,7 +24,7 @@ class FaqMutations:
       id=new_faq.id,
       question=new_faq.question,
       answer=new_faq.answer,
-      order_index=new_faq.order_index
+      index=new_faq.index
     )
 
   @strawberry.mutation
@@ -39,14 +39,14 @@ class FaqMutations:
       updated_faq.question = gql_input.question
     if gql_input.answer is not None:
       updated_faq.answer = gql_input.answer
-    if gql_input.order_index is not None:
-      updated_faq.order_index = gql_input.order_index
+    if gql_input.index is not None:
+      updated_faq.index = gql_input.index
     db.session.commit()
     return GQLFaq(
       id=updated_faq.id,
       question=updated_faq.question,
       answer=updated_faq.answer,
-      order_index=updated_faq.order_index
+      index=updated_faq.index
     )
 
   @strawberry.mutation

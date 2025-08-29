@@ -15,7 +15,7 @@ class BlogQueries:
         title=b.title,
         subtitle=b.subtitle,
         main_image=b.main_image,
-        order_index=b.order_index
+        index=b.index
       ) for b in rows
     ]
 
@@ -32,7 +32,7 @@ class BlogQueries:
       title=blog.title,
       subtitle=blog.subtitle,
       main_image=blog.main_image,
-      order_index=blog.order_index
+      index=blog.index
     )
 
   @strawberry.field

@@ -7,13 +7,13 @@ class GQLBlogImage:
   id: strawberry.ID
   url: str
   alt_text: Optional[str]
-  order_index: int = 0
+  index: int = 0
 
 @strawberry.type
 class GQLBlogParagraph:
   id: strawberry.ID
   text: str
-  order_index: int = 0
+  index: int = 0
 
 @strawberry.type
 class GQLBlog:
@@ -21,7 +21,7 @@ class GQLBlog:
   title: str
   subtitle: Optional[str]
   main_image: Optional[str]
-  order_index: int = 0
+  index: int = 0
 
   @strawberry.field
   def images(self) -> List[GQLBlogImage]:
@@ -31,7 +31,7 @@ class GQLBlog:
         id=i.id,
         url=i.url,
         alt_text=i.alt_text,
-        order_index=i.order_index
+        index=i.index
       ) for i in blog.images
     ]
   @strawberry.field
@@ -41,7 +41,7 @@ class GQLBlog:
       GQLBlogParagraph(
         id=p.id,
         text=p.text,
-        order_index=p.order_index
+        index=p.index
       ) for p in blog.paragraphs
     ]
 
@@ -49,12 +49,12 @@ class GQLBlog:
 class BlogImageInput:
   url: str
   alt_text: Optional[str]
-  order_index: int = 0
+  index: int = 0
 
 @strawberry.input
 class BlogParagraphInput:
   text: str
-  order_index: int = 0
+  index: int = 0
 
 @strawberry.input
 class BlogCreateInput:
@@ -63,7 +63,7 @@ class BlogCreateInput:
   main_image: Optional[str] = None
   images: Optional[List[BlogImageInput]] = None
   paragraphs: Optional[List[BlogParagraphInput]] = None
-  order_index: int = 0
+  index: int = 0
 
 @strawberry.input
 class BlogUpdateInput:
@@ -73,4 +73,4 @@ class BlogUpdateInput:
   main_image: Optional[str] = None
   images: Optional[List[BlogImageInput]] = None
   paragraphs: Optional[List[BlogParagraphInput]] = None
-  order_index: int = 0
+  index: int = 0

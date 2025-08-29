@@ -13,7 +13,7 @@ class ProductQueries:
       GQLProduct(
         id=p.id,
         url=p.url,
-        order_index=p.order_index,
+        index=p.index,
         uploaded_at=p.uploaded_at
       ) for p in rows
     ]
@@ -26,7 +26,7 @@ class ProductQueries:
     return GQLProduct(
       id=product.id,
       url=product.url,
-      order_index=product.order_index,
+      index=product.index,
       uploaded_at=product.uploaded_at
     )
 

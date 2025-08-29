@@ -14,7 +14,7 @@ class BlogMutations:
       title=gql_input.title,
       subtitle=gql_input.subtitle,
       main_image=gql_input.main_image,
-      order_index=gql_input.order_index
+      index=gql_input.index
     )
     db.session.add(blog)
     db.session.flush()
@@ -26,7 +26,7 @@ class BlogMutations:
             blog_id=blog.id,
             url=img.url,
             alt_text=img.alt_text,
-            order_index=img.order_index or 0
+            index=img.index or 0
           )
         )
     if gql_input.paragraphs:
@@ -35,7 +35,7 @@ class BlogMutations:
           BlogParagraph(
             blog_id=blog.id,
             text=paragraph.text,
-            order_index=paragraph.order_index or 0
+            index=paragraph.index or 0
           )
         )
     db.session.commit()
@@ -56,8 +56,8 @@ class BlogMutations:
       blog.subtitle = gql_input.subtitle
     if gql_input.main_image is not None:
       blog.main_image = gql_input.main_image
-    if gql_input.order_index is not None:
-      blog.order_index = gql_input.order_index
+    if gql_input.index is not None:
+      blog.index = gql_input.index
 
     if gql_input.images is not None:
       BlogImage.query.filter_by(blog_id=blog.id).delete()
@@ -67,7 +67,7 @@ class BlogMutations:
             blog_id=blog.id,
             url=img.url,
             alt_text=img.alt_text,
-            order_index=img.order_index or 0
+            index=img.index or 0
           )
         )
     if gql_input.paragraphs is not None:
@@ -77,7 +77,7 @@ class BlogMutations:
           BlogParagraph(
             blog_id=blog.id,
             text=paragraph.text,
-            order_index=paragraph.order_index or 0
+            index=paragraph.index or 0
           )
         )
     db.session.commit()
@@ -86,7 +86,7 @@ class BlogMutations:
       title=blog.title,
       subtitle=blog.subtitle,
       main_image=blog.main_image,
-      order_index=blog.order_index
+      index=blog.index
     )
 
   @strawberry.mutation

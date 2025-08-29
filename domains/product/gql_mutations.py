@@ -11,14 +11,14 @@ class ProductMutations:
   def create_product(self, gql_input: ProductCreateInput) -> GQLProduct:
     product = Product(
       url=gql_input.url,
-      order_index=gql_input.order_index,
+      index=gql_input.index,
     )
     db.session.add(product)
     db.session.commit()
     return GQLProduct(
       id=product.id,
       url=product.url,
-      order_index=product.order_index,
+      index=product.index,
       uploaded_at=product.uploaded_at
     )
 

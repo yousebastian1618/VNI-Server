@@ -5,4 +5,4 @@ class GQLFaq:
   id: strawberry.ID
   question: str
   answer: str
-  order_index: int = 0
+  index: int = 0

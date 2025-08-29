@@ -10,4 +10,4 @@ class Faq(db.Model):
   id: Mapped[uuid.UUID] = mapped_column(PG_UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
   question: Mapped[str] = mapped_column(Text, nullable=False)
   answer: Mapped[str] = mapped_column(Text, nullable=False)
-  order_index: Mapped[int] = mapped_column(default=0)
+  index: Mapped[int] = mapped_column(default=0)
