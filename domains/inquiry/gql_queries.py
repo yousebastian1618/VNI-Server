@@ -2,41 +2,33 @@ import strawberry
 from typing import List, Optional
 from .models import Inquiry
 from domains.inquiry.gql_types import GQLInquiry
+from . import services as inquiry_service
+
+
+def to_gql_inquiry(inquiry) -> GQLInquiry:
+  return GQLInquiry(
+    id=inquiry.id,
+    first_name=inquiry.first_name,
+    last_name=inquiry.last_name,
+    email=inquiry.email,
+    subject=inquiry.subject,
+    message=inquiry.message,
+    sent_at=getattr(inquiry, "send_at"),
+    resolved=getattr(inquiry, "resolved")
+  )
 
 
 @strawberry.type
 class InquiryQueries:
   @strawberry.field
   def inquiries(self, limit: int = 20, offset: int = 0) -> List[GQLInquiry]:
-    rows = Inquiry.query.order_by(Inquiry.sent_at.desc()).limit(limit).offset(offset)
-    return [
-      GQLInquiry(
-        id=i.id,
-        first_name=i.first_name,
-        last_name=i.last_name,
-        email=i.email,
-        subject=i.subject,
-        text=i.text,
-        sent_at=i.sent_at,
-        resolved=i.resolved
-      ) for i in rows
-    ]
+    items = inquiry_service.list_inquiries(limit=limit, offset=offset)
+    return [to_gql_inquiry(iq) for iq in items]
 
   @strawberry.field
   def inquiry(self, uid: strawberry.ID) -> Optional[GQLInquiry]:
-    the_inquiry = Inquiry.query.get(uid)
-    if not the_inquiry:
-      return None
-    return GQLInquiry(
-      id=the_inquiry.id,
-      first_name=the_inquiry.first_name,
-      last_name=the_inquiry.last_name,
-      email=the_inquiry.email,
-      subject=the_inquiry.subject,
-      text=the_inquiry.text,
-      sent_at=the_inquiry.sent_at,
-      resolved=the_inquiry.resolved
-    )
+    inquiry = inquiry_service.get_inquiry(uid)
+    return None if inquiry is None else to_gql_inquiry(inquiry)
 
   @strawberry.field
   def inquiry_count(self) -> int:

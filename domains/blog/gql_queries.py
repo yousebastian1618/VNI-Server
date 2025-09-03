@@ -3,37 +3,36 @@ from graphql import GraphQLError
 from .gql_types import GQLBlog
 from typing import List
 from .models import Blog
+from . import services as blog_service
+
+def to_gql_blog(blog) -> GQLBlog:
+  return GQLBlog(
+    id=blog.id,
+    title=blog.title,
+    subtitle=blog.subtitle,
+    created_at=blog.created_at,
+    updated_at=blog.updated_at,
+    index=blog.index,
+    images=blog.images,
+    paragraphs=blog.paragraphs
+  )
 
 @strawberry.type
 class BlogQueries:
   @strawberry.field
   def blogs(self, limit: int = 20, offset: int = 0) -> List[GQLBlog]:
-    rows = Blog.query.order_by(Blog.created_at.desc()).offset(offset).limit(limit)
-    return [
-      GQLBlog(
-        id=b.id,
-        title=b.title,
-        subtitle=b.subtitle,
-        main_image=b.main_image,
-        index=b.index
-      ) for b in rows
-    ]
+    items = blog_service.list_blogs(limit=limit, offset=offset)
+    return [to_gql_blog(b) for b in items]
 
   @strawberry.field
   def blog(self, uid: strawberry.ID) -> GQLBlog:
-    blog = Blog.query.get(uid)
+    blog = blog_service.blog(uid)
     if not blog:
       raise GraphQLError(
-        "Blog does not exists",
+        "Blog not found",
         extensions={"code": "NOT_FOUND", "status": 404}
       )
-    return GQLBlog(
-      id=blog.id,
-      title=blog.title,
-      subtitle=blog.subtitle,
-      main_image=blog.main_image,
-      index=blog.index
-    )
+    return to_gql_blog(blog)
 
   @strawberry.field
   def count_blogs(self) -> int:

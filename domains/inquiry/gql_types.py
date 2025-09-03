@@ -8,7 +8,7 @@ class GQLInquiry:
   last_name: str
   email: str
   subject: str
-  text: str
+  message: str
   sent_at: datetime
   resolved: bool
 
@@ -18,5 +18,9 @@ class InquiryCreateInput:
   last_name: str
   email: str
   subject: str
-  text: str
+  message: str
 
+@strawberry.input
+class InquiryUpdateInput:
+  id: strawberry.ID
+  resolved: bool

@@ -1,11 +1,11 @@
 import strawberry
 from domains.blog.gql_queries import BlogQueries
 from domains.product.gql_queries import ProductQueries
-from domains.faq.gql_queries import FaqQueries
 from domains.inquiry.gql_queries import InquiryQueries
+from domains.user.gql_queries import UserQueries
 
 @strawberry.type
-class Query(BlogQueries, ProductQueries, FaqQueries, InquiryQueries):
+class Query(BlogQueries, ProductQueries, InquiryQueries, UserQueries):
   @strawberry.field
   def health(self) -> str:
     return "ok"

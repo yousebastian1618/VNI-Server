@@ -1,15 +1,19 @@
 import strawberry
 from datetime import datetime
+from typing import Optional
 
 @strawberry.type
 class GQLProduct:
   id: strawberry.ID
-  url: str
   index: int = 0
   uploaded_at: datetime
 
 @strawberry.input
-class ProductCreateInput:
-  url: str
-  index: int = 0
+class ProductUpdateInput:
+    id: strawberry.ID
+    index: Optional[int] = None
 
+@strawberry.input
+class ProductOrderInput:
+    id: strawberry.ID
+    index: int
