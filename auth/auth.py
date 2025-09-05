@@ -3,7 +3,7 @@ from typing import Dict, Any, Optional
 import jwt
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
-from flask import request, jsonify
+from flask import request
 
 load_dotenv()
 
@@ -31,6 +31,7 @@ def create_refresh_token(sub: str) -> str:
   return jwt.encode(payload, os.environ.get('JWT_SECRET_KEY'), algorithm=os.environ.get("JWT_ALG", "HS256"))
 
 def decode_token(token: str) -> Dict[str, Any]:
+  print(token)
   return jwt.decode(token, os.environ.get("JWT_SECRET_KEY"), algorithms=os.environ.get("JWT_ALG", "HS256"))
 
 def get_user_from_token():

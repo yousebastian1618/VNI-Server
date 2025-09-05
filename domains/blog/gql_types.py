@@ -4,12 +4,12 @@ from .models import Blog
 
 @strawberry.type
 class GQLBlogImage:
-  id: strawberry.ID
+  id: str
   index: int = 0
 
 @strawberry.type
 class GQLBlogParagraph:
-  id: strawberry.ID
+  id: str
   title: str
   text: str
   index: int = 0
@@ -19,9 +19,8 @@ class GQLBlog:
   id: strawberry.ID
   title: str
   subtitle: Optional[str]
+  author: Optional[str]
   index: int = 0
-  images: List[GQLBlogImage] = []
-  paragraphs: List[GQLBlogParagraph] = []
 
   @strawberry.field
   def images(self) -> List[GQLBlogImage]:
@@ -44,7 +43,7 @@ class GQLBlog:
       ) for p in blog.paragraphs
     ]
 
-@strawberry.type
+@strawberry.input
 class BlogParagraphCreateInput:
   title: str
   text: str
@@ -65,8 +64,9 @@ class BlogParagraphUpdateInput:
 class BlogCreateInput:
   title: str
   subtitle: Optional[str] = None
-  images: Optional[List[str]] = None
-  paragraphs: Optional[List[str]] = None
+  author: Optional[str] = None
+  images: Optional[List[int]] = None
+  paragraphs: Optional[List[BlogParagraphCreateInput]] = None
   index: int = 0
 
 @strawberry.input
@@ -74,6 +74,7 @@ class BlogUpdateInput:
   id: strawberry.ID
   title: Optional[str] = None
   subtitle: Optional[str] = None
+  author: Optional[str] = None
   images: Optional[List[BlogImageUpdateInput]] = None
   paragraphs: Optional[List[BlogParagraphUpdateInput]] = None
   index: int = 0

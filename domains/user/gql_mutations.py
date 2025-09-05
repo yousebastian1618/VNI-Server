@@ -1,13 +1,12 @@
 import strawberry
 from auth.guard import login_required
-from helper.index import to_uuid
 from . import services as user_service
-from domains.user.gql_types import UserCreateInput, GQLUser, UserUpdateInput, AuthPayload
+from domains.user.gql_types import UserCreateInput, GQLUser, UserUpdateInput, AuthPayload, UserLoginInput
 
 
 def to_gql_user(user) -> GQLUser:
   return GQLUser(
-    id=to_uuid(user.id),
+    id=user.id,
     email=user.email,
   )
 
@@ -43,6 +42,6 @@ class UserMutations:
     return user_service.delete_user(uid)
 
   @strawberry.mutation
-  def login(self, email: str, password: str) -> AuthPayload:
-    auth_payload = user_service.login(email, password)
+  def login(self, gql_input: UserLoginInput) -> AuthPayload:
+    auth_payload = user_service.login(gql_input.email, gql_input.password)
     return to_gql_auth_payload(auth_payload)

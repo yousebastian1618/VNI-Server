@@ -1,8 +1,9 @@
 from __future__ import annotations
+from dataclasses import dataclass
+from typing import Optional
+from botocore.context import get_context
 from flask import Flask
 from strawberry.flask.views import GraphQLView
-
-from auth.context import RequestContext
 from config import Config
 from schema import schema
 from extensions import db, migrate

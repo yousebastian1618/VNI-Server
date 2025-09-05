@@ -10,11 +10,8 @@ def to_gql_blog(blog) -> GQLBlog:
     id=blog.id,
     title=blog.title,
     subtitle=blog.subtitle,
-    created_at=blog.created_at,
-    updated_at=blog.updated_at,
+    author=blog.author,
     index=blog.index,
-    images=blog.images,
-    paragraphs=blog.paragraphs
   )
 
 @strawberry.type

@@ -13,6 +13,11 @@ class AuthPayload:
   user: GQLUser
 
 @strawberry.input
+class UserLoginInput:
+  email: str
+  password: str
+
+@strawberry.input
 class UserCreateInput:
   email: str
   password: str

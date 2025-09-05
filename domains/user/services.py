@@ -2,7 +2,6 @@ from typing import Optional
 from graphql import GraphQLError
 from sqlalchemy.orm import Session
 from auth.auth import create_access_token, create_refresh_token, get_user_from_token
-from helper.index import to_uuid
 from .gql_types import AuthPayload
 from .models import User
 from extensions import db
@@ -10,7 +9,7 @@ from extensions import db
 def get_user_by_token():
   user = get_user_from_token()
   if user is None: return None
-  db_user = User.query.get(to_uuid(user['id']))
+  db_user = User.query.get(user['id'])
   if not user:
     return None
   return db_user

@@ -1,48 +1,40 @@
 from typing import Optional, List
-from helper.index import to_uuid
 from .gql_types import BlogImageUpdateInput, BlogParagraphUpdateInput, BlogParagraphCreateInput
 from .models import Blog, BlogImage, BlogParagraph
 from extensions import db
+import uuid
 
 def list_blogs(limit, offset):
   return Blog.query.order_by(Blog.index).offset(offset).limit(limit).all()
 
 def blog(uid) -> Optional[Blog]:
-  return Blog.query.get(to_uuid(uid))
+  return Blog.query.get(uid)
 
 def count_blogs() -> int:
   return Blog.query.count()
 
-def create_blog(title: str, subtitle: str, images: List[str], paragraphs: List[BlogParagraphCreateInput]) -> Optional[Blog]:
+def create_blog(title: str, subtitle: str, author: Optional[str], images: List[int], paragraphs: List[BlogParagraphCreateInput]) -> Optional[Blog]:
   new_blog = Blog(
     title=title,
     subtitle=subtitle,
+    author=author,
     index=count_blogs(),
+    images=[
+      BlogImage(
+        id=str(uuid.uuid4()),
+        index=i,
+      ) for i, _ in enumerate(images or [])
+    ],
+    paragraphs=[
+      BlogParagraph(id=str(uuid.uuid4()), title=p.title, text=p.text, index=j)
+      for j, p in enumerate(paragraphs or [])
+    ],
   )
   db.session.add(new_blog)
-  image_index = 0
-  for _ in images:
-    new_image = BlogImage(
-      blog_id=new_blog.id,
-      index=image_index
-    )
-    image_index += 1
-    db.session.add(new_image)
-
-  paragraph_index = 0
-  for paragraph in paragraphs:
-    new_paragraph = BlogParagraph(
-      blog_id=new_blog.id,
-      title=paragraph.title,
-      text=paragraph.text,
-      index=paragraph_index
-    )
-    paragraph_index += 1
-    db.session.add(new_paragraph)
   db.session.commit()
   return new_blog
 
-def create_blog_image(blog_id, index: int) -> List[BlogImage]:
+def create_blog_image(blog_id: str, index: int) -> BlogImage:
   new_blog_image = BlogImage(
     blog_id=blog_id,
     index=index
@@ -62,14 +54,16 @@ def create_blog_paragraph(blog_id, title: str, text: str, index: int) -> Optiona
   db.session.commit()
   return new_blog_paragraph
 
-def update_blog(uid, title: Optional[str], subtitle: Optional[str], images: Optional[List[BlogImageUpdateInput]], paragraphs: Optional[List[BlogParagraphUpdateInput]]) -> Optional[Blog]:
-  target_blog = Blog.query.get(to_uuid(uid))
+def update_blog(uid, title: Optional[str], subtitle: Optional[str], author: str, images: Optional[List[BlogImageUpdateInput]], paragraphs: Optional[List[BlogParagraphUpdateInput]]) -> Optional[Blog]:
+  target_blog = Blog.query.get(uid)
   if not target_blog:
     return None
   if title is not None:
     target_blog.title = title
   if subtitle is not None:
     target_blog.subtitle = subtitle
+  if author is not None:
+    target_blog.author = author
 
   for target_image in images:
     for image in target_blog.images:
@@ -83,7 +77,7 @@ def update_blog(uid, title: Optional[str], subtitle: Optional[str], images: Opti
   return target_blog
 
 def update_blog_image(uid, index: Optional[int]) -> Optional[BlogImage]:
-  target_blog_image = BlogImage.query.get(to_uuid(uid))
+  target_blog_image = BlogImage.query.get(uid)
   if not target_blog_image:
     return None
   if index is not None:
@@ -92,7 +86,7 @@ def update_blog_image(uid, index: Optional[int]) -> Optional[BlogImage]:
   return target_blog_image
 
 def update_blog_paragraph(uid, title: Optional[str], text: Optional[str], index: Optional[int]) -> Optional[BlogParagraph]:
-  target_blog_paragraph = BlogParagraph.query.get(to_uuid(uid))
+  target_blog_paragraph = BlogParagraph.query.get(uid)
   if not target_blog_paragraph:
     return None
   if title is not None:
@@ -105,7 +99,7 @@ def update_blog_paragraph(uid, title: Optional[str], text: Optional[str], index:
   return target_blog_paragraph
 
 def delete_blog(uid) -> bool:
-  target_blog = Blog.query.get(to_uuid(uid))
+  target_blog = Blog.query.get(uid)
   if not target_blog:
     return False
   db.session.delete(target_blog)
@@ -113,7 +107,7 @@ def delete_blog(uid) -> bool:
   return True
 
 def delete_blog_image(uid) -> bool:
-  target_blog_image = BlogImage.query.get(to_uuid(uid))
+  target_blog_image = BlogImage.query.get(uid)
   if not target_blog_image:
     return False
   db.session.delete(target_blog_image)
@@ -121,7 +115,7 @@ def delete_blog_image(uid) -> bool:
   return True
 
 def delete_blog_paragraph(uid) -> bool:
-  target_blog_paragraph = BlogParagraph.query.get(to_uuid(uid))
+  target_blog_paragraph = BlogParagraph.query.get(uid)
   if not target_blog_paragraph:
     return False
   db.session.delete(target_blog_paragraph)

@@ -1,6 +1,5 @@
 from typing import List, Optional
 from extensions import db
-from helper.index import to_uuid
 from .models import Product
 from cloudflare.index import CloudFlare
 from flask import Blueprint, Response, request, jsonify
@@ -32,7 +31,7 @@ def list_products() -> List[Product]:
   return Product.query.order_by('index').all()
 
 def get_product(uid) -> Optional[Product]:
-  return Product.query.get(to_uuid(uid))
+  return Product.query.get(uid)
 
 def count_products() -> int:
   return Product.query.count()
@@ -47,7 +46,7 @@ def create_product() -> Product:
 
 @product_bp.get("/image/<uid>/")
 def retrieve_image(uid):
-  product = Product.query.get(to_uuid(uid))
+  product = Product.query.get(uid)
   key = "noThumbnail.jpeg" if not product else f'products/{uid}'
   obj = cf.get_object(key)
   body = obj['Body'].read()
@@ -71,7 +70,7 @@ def get_upload_url(uuid):
 
 
 def update_product(uid, index: Optional[int]=None) -> Optional[Product]:
-  product = Product.query.get(to_uuid(uid))
+  product = Product.query.get(uid)
   if not product:
       return None
   if index is not None: product.index = index
@@ -82,8 +81,6 @@ def reorder_products(product_index_map) -> bool:
   for item in product_index_map:
     pid = getattr(item, 'id')
     idx = getattr(item, 'index')
-    if isinstance(pid, str):
-      pid = to_uuid(pid)
     idx = int(idx)
     product = db.session.get(Product, pid)
     if product is None:
@@ -93,7 +90,7 @@ def reorder_products(product_index_map) -> bool:
   return True
 
 def delete_product(uid) -> bool:
-  product = Product.query.get(to_uuid(uid))
+  product = Product.query.get(uid)
   if not product:
       return False
   reorder_products_after_delete(product)
@@ -103,7 +100,7 @@ def delete_product(uid) -> bool:
 
 def delete_products(uids: List[str]) -> List[Product]:
   for uid in uids:
-    product = Product.query.get(to_uuid(uid))
+    product = Product.query.get(uid)
     if not product:
       continue
     else:
