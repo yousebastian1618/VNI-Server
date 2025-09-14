@@ -9,6 +9,6 @@ from sqlalchemy import DateTime
 class Product(db.Model):
   __tablename__ = 'products'
 
-  id: Mapped[str] = mapped_column(sa.String(36), primary_key=True, default=str(uuid.uuid4()))
+  id: Mapped[str] = mapped_column(sa.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
   index: Mapped[int] = mapped_column(default=0)
   uploaded_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now)

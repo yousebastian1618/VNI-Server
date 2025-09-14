@@ -9,7 +9,7 @@ from extensions import db
 class User(db.Model):
   __tablename__ = "users"
 
-  id: Mapped[str] = mapped_column(sa.String(36), primary_key=True, default=str(uuid.uuid4()))
+  id: Mapped[str] = mapped_column(sa.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
   email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
   password: Mapped[str] = mapped_column(String(255), nullable=False)
 

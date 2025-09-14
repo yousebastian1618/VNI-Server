@@ -9,7 +9,7 @@ from datetime import datetime
 class Inquiry(db.Model):
   __tablename__ = "inquiries"
 
-  id: Mapped[str] = mapped_column(sa.String(36), primary_key=True, default=str(uuid.uuid4()))
+  id: Mapped[str] = mapped_column(sa.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
   first_name: Mapped[str] = mapped_column(String(50), nullable=True)
   last_name: Mapped[str] = mapped_column(String(50), nullable=True)
   email: Mapped[str]= mapped_column(String(100), nullable=False)

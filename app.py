@@ -1,7 +1,4 @@
 from __future__ import annotations
-from dataclasses import dataclass
-from typing import Optional
-from botocore.context import get_context
 from flask import Flask
 from strawberry.flask.views import GraphQLView
 from config import Config
@@ -13,6 +10,7 @@ import sqlite3
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from domains.product.services import product_bp
+from domains.blog.services import blog_bp
 
 
 load_dotenv()
@@ -45,6 +43,7 @@ def create_app() -> Flask:
     view_func=GraphQLView.as_view("graphql_view", schema=schema, graphiql=True)
   )
   app.register_blueprint(product_bp)
+  app.register_blueprint(blog_bp)
 
   @app.get("/")
   def health():
