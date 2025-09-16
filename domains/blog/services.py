@@ -105,9 +105,12 @@ def update_blog(uid, title: Optional[str], subtitle: Optional[str], author: str,
     target_blog.author = author
 
   for target_paragraph in paragraphs:
-    for paragraph in target_blog.paragraphs:
-      if paragraph.id == target_paragraph.id:
-        update_blog_paragraph(target_paragraph.id, target_paragraph.title, target_paragraph.text, target_paragraph.image, target_paragraph.index)
+    if target_paragraph.id == '-1':
+      create_blog_paragraph(target_blog.id, target_paragraph.title, target_paragraph.text, target_paragraph.image, target_paragraph.index)
+    else:
+      for paragraph in target_blog.paragraphs:
+        if paragraph.id == target_paragraph.id:
+          update_blog_paragraph(target_paragraph.id, target_paragraph.title, target_paragraph.text, target_paragraph.image, target_paragraph.index)
   db.session.commit()
   return target_blog
 
@@ -134,14 +137,15 @@ def sort_blog(id_index_map: Dict[str, int]) -> bool:
   db.session.commit()
   return True
 
-def delete_blog(uid) -> bool:
+def delete_blog(uid) -> Optional[List[Blog]]:
   target_blog = Blog.query.get(uid)
-  if not target_blog:
-    return False
+  for paragraph in target_blog.paragraphs:
+    if paragraph.image:
+      cf.delete_object(f"blogs/{paragraph.image}")
   db.session.delete(target_blog)
   reorder_blog_after_delete(target_blog)
   db.session.commit()
-  return True
+  return Blog.query.order_by('index').all()
 
 def delete_blogs(uids: List[str]) -> List[Blog]:
   for uid in uids:

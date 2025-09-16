@@ -1,7 +1,20 @@
 from typing import List, Optional
-from extensions import db
 from domains.inquiry.models import Inquiry
+from flask_mail import Message
+from extensions import mail, db
+from flask import current_app
 
+
+def send_inquiry(sender_email: str, first_name: str, last_name: str, subject: str, message: str):
+  admin_email = current_app.config.get("ADMIN_EMAIL")
+  msg = Message(
+    subject=subject,
+    body=f"From: {first_name + ' ' + last_name} <{sender_email}>\n\n{message}",
+    recipients=[admin_email],
+    reply_to=sender_email
+  )
+  mail.send(msg)
+  return True
 
 def list_inquiries(limit: int=20, offset: int = 0) -> List[Inquiry]:
   return Inquiry.query.order_by("id").offset(offset).limit(limit).all()
@@ -20,6 +33,7 @@ def create_inquiry(first_name: str, last_name: str, email: str, subject: str, me
     subject=subject,
     message=message
   )
+  send_inquiry(email, first_name, last_name, subject, message)
   db.session.add(inquiry)
   db.session.commit()
   return True

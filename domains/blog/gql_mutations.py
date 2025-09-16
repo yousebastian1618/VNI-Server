@@ -1,4 +1,6 @@
 import strawberry
+from graphql import GraphQLError
+
 from auth.guard import login_required
 from .gql_types import GQLBlog, BlogCreateInput, BlogUpdateInput, GQLBlogParagraph, BlogParagraphUpdateInput, BlogParagraphCreateInput
 from typing import Optional, List
@@ -95,6 +97,7 @@ class BlogMutations:
     return to_gql_blog(target_blog)
 
   @strawberry.mutation
+  # @login_required
   def reorder_blogs(self, gql_input: List[BlogUpdateInput]) -> bool:
     id_index_map: dict[str, int] = {
       str(item.id): int(item.index)  # ensure types
@@ -105,8 +108,9 @@ class BlogMutations:
 
   @strawberry.mutation
   # @login_required
-  def delete_blog(self, uid: strawberry.ID) -> bool:
-    return blog_service.delete_blog(uid)
+  def delete_blog(self, uid: str) -> Optional[List[GQLBlog]]:
+    items = blog_service.delete_blog(uid)
+    return [to_gql_blog(b) for b in items]
 
   @strawberry.mutation
   # @login_required

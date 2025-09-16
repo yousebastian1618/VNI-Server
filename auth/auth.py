@@ -1,9 +1,8 @@
-import os
 from typing import Dict, Any, Optional
 import jwt
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
-from flask import request
+from flask import request, current_app
 
 load_dotenv()
 
@@ -15,23 +14,23 @@ def create_access_token(sub: str, extra: Optional[Dict[str, Any]]) -> str:
     "sub": sub,
     "type": "access",
     "iat": int(_now().timestamp()),
-    "exp": int((_now() + timedelta(minutes=int(os.environ.get("JWT_ACCESS_TTL_MIN", 30)))).timestamp())
+    "exp": int((_now() + timedelta(minutes=int(current_app.config.get("JWT_ACCESS_TTL_MIN", 30)))).timestamp())
   }
   if extra:
     payload.update(extra)
-  return jwt.encode(payload, os.environ.get("JWT_SECRET_KEY"), algorithm=os.environ.get("JWT_ALG", "HS256"))
+  return jwt.encode(payload, current_app.config.get("JWT_SECRET_KEY"), algorithm=current_app.config.get("JWT_ALG", "HS256"))
 
 def create_refresh_token(sub: str) -> str:
   payload = {
     "sub": sub,
     "type": "refresh",
     "iat": int(_now().timestamp()),
-    "exp": int((_now() + timedelta(days=os.environ.get("JWT_REFRESH_TTL", 7))).timestamp())
+    "exp": int((_now() + timedelta(days=current_app.config.get("JWT_REFRESH_TTL", 7))).timestamp())
   }
-  return jwt.encode(payload, os.environ.get('JWT_SECRET_KEY'), algorithm=os.environ.get("JWT_ALG", "HS256"))
+  return jwt.encode(payload, current_app.config.get('JWT_SECRET_KEY'), algorithm=current_app.config.get("JWT_ALG", "HS256"))
 
 def decode_token(token: str) -> Dict[str, Any]:
-  return jwt.decode(token, os.environ.get("JWT_SECRET_KEY"), algorithms=os.environ.get("JWT_ALG", "HS256"))
+  return jwt.decode(token, current_app.config.get("JWT_SECRET_KEY"), algorithms=current_app.config.get("JWT_ALG", "HS256"))
 
 def get_user_from_token():
   auth = request.headers.get("Authorization", "")

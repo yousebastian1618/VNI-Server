@@ -9,7 +9,7 @@ class GQLBlogParagraph:
   title: Optional[str]
   text: Optional[str]
   image: Optional[str]
-  index: int = 0
+  index: Optional[int]
 
 @strawberry.input
 class BlogParagraphCreateInput:
@@ -23,7 +23,7 @@ class BlogParagraphUpdateInput:
   title: Optional[str]
   text: Optional[str]
   image: Optional[str]
-  index: int
+  index: Optional[int]
 
 
 
@@ -61,11 +61,10 @@ class BlogCreateInput:
   author: Optional[str] = None
   images: Optional[List[int]] = None
   paragraphs: Optional[List[BlogParagraphCreateInput]] = None
-  index: int = 0
 
 @strawberry.input
 class BlogUpdateInput:
-  id: strawberry.ID
+  id: str
   title: Optional[str] = None
   subtitle: Optional[str] = None
   author: Optional[str] = None

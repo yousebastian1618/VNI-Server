@@ -1,8 +1,9 @@
-import os
 import logging
 import boto3
 from botocore.exceptions import ClientError
 from botocore.client import Config
+from flask import current_app
+import os
 
 
 class CloudFlare:
@@ -18,7 +19,7 @@ class CloudFlare:
 
   def list_objects(self, key):
     return self.s3_client.list_objects_v2(
-      Bucket=os.environ.get('BUCKET'),
+      Bucket=current_app.config.get('BUCKET'),
       Delimiter='/',
       Prefix=key
     )
@@ -26,7 +27,7 @@ class CloudFlare:
   def get_object(self, key):
     try:
       return self.s3_client.get_object(
-        Bucket=os.environ.get('BUCKET'),
+        Bucket=current_app.config.get('BUCKET'),
         Key=key
       )
     except ClientError as e:
@@ -37,7 +38,7 @@ class CloudFlare:
     try:
       response = self.s3_client.upload_fileobj(
         Fileobj=file,
-        Bucket=os.environ.get('BUCKET'),
+        Bucket=current_app.config.get('BUCKET'),
         Key=name
       )
     except ClientError as e:
@@ -48,7 +49,7 @@ class CloudFlare:
   def delete_object(self, key):
     try:
       response = self.s3_client.delete_object(
-        Bucket=os.environ.get('BUCKET'),
+        Bucket=current_app.config.get('BUCKET'),
         Key=key
       )
     except ClientError as e:
@@ -61,7 +62,7 @@ class CloudFlare:
       response = self.s3_client.generate_presigned_url(
         method,
         Params={
-          'Bucket': os.environ.get('BUCKET'),
+          'Bucket': current_app.config.get('BUCKET'),
           'Key': key,
         },
         ExpiresIn=3600
