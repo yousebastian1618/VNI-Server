@@ -1,6 +1,9 @@
 from __future__ import annotations
-from flask import Flask
+from flask import Flask, jsonify, request
 from dotenv import load_dotenv
+
+from domains.maintenance.models import Maintenance
+
 load_dotenv()
 from strawberry.flask.views import GraphQLView
 from config import Config
@@ -30,6 +33,22 @@ def create_app() -> Flask:
   db.init_app(app)
   migrate.init_app(app, db)
   mail.init_app(app)
+
+  allowed_requests = ['Maintenance', 'Login', '/graphql', 'ToggleMaintenance', 'GetUserByToken']
+
+  @app.before_request
+  def maintenance_gate():
+    if Maintenance.query.first().maintenance:
+      if request.method == "POST":
+        payload = request.get_json(silent=True)
+      else:
+        q = request.args.get("query")
+        payload = {"query": q} if q else None
+      if 'operationName' in payload:
+        if payload['operationName'] in allowed_requests:
+          return
+      return jsonify({"status": "UNDER_MAINTENANCE"}), 503
+    return
 
   @event.listens_for(Engine, "connect")
   def _set_sqlite_pragma(dbapi_connection, connection_record):
