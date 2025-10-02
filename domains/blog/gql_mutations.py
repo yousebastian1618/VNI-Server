@@ -22,6 +22,7 @@ def to_gql_blog_paragraph(blog_paragraph) -> GQLBlogParagraph:
 
 class ParagraphMutation:
   @strawberry.mutation
+  @login_required
   def create_blog_paragraph(self, gql_input: BlogParagraphCreateInput) -> GQLBlogParagraph:
     blog_paragraph = blog_service.create_blog_paragraph(
       gql_input.text
@@ -34,7 +35,7 @@ class ParagraphMutation:
     )
 
   @strawberry.mutation
-  # @login_required
+  @login_required
   def update_blog_paragraph(self, gql_input: BlogParagraphUpdateInput) -> GQLBlogParagraph:
     target_blog_paragraph = blog_service.update_blog_paragraph(
       uid=gql_input.id,
@@ -46,7 +47,7 @@ class ParagraphMutation:
     return to_gql_blog_paragraph(target_blog_paragraph)
 
   @strawberry.mutation
-  # @login_required
+  @login_required
   def delete_blog_paragraph(self, uid: strawberry.ID) -> bool:
     return blog_service.delete_blog_paragraph(uid)
 
@@ -74,7 +75,7 @@ def to_gql_blog(blog) -> GQLBlog:
 @strawberry.type
 class BlogMutations:
   @strawberry.mutation
-  # @login_required
+  @login_required
   def create_blog(self, gql_input: BlogCreateInput) -> GQLBlog:
     blog = blog_service.create_blog(
       title=gql_input.title,
@@ -85,7 +86,7 @@ class BlogMutations:
     return to_gql_blog(blog)
 
   @strawberry.mutation
-  # @login_required
+  @login_required
   def update_blog(self, gql_input: BlogUpdateInput) -> Optional[GQLBlog]:
     target_blog = blog_service.update_blog(
       uid=gql_input.id,
@@ -97,7 +98,7 @@ class BlogMutations:
     return to_gql_blog(target_blog)
 
   @strawberry.mutation
-  # @login_required
+  @login_required
   def reorder_blogs(self, gql_input: List[BlogUpdateInput]) -> bool:
     id_index_map: dict[str, int] = {
       str(item.id): int(item.index)  # ensure types
@@ -107,13 +108,13 @@ class BlogMutations:
     return blog_service.sort_blog(id_index_map)
 
   @strawberry.mutation
-  # @login_required
+  @login_required
   def delete_blog(self, uid: str) -> Optional[List[GQLBlog]]:
     items = blog_service.delete_blog(uid)
     return [to_gql_blog(b) for b in items]
 
   @strawberry.mutation
-  # @login_required
+  @login_required
   def delete_blogs(self, uids: List[str]) -> List[GQLBlog]:
     items = blog_service.delete_blogs(uids)
     return [to_gql_blog(b) for b in items];

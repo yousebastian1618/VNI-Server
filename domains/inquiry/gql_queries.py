@@ -1,5 +1,7 @@
 import strawberry
 from typing import List, Optional
+
+from auth.guard import login_required
 from .models import Inquiry
 from domains.inquiry.gql_types import GQLInquiry
 from . import services as inquiry_service
@@ -21,6 +23,7 @@ def to_gql_inquiry(inquiry) -> GQLInquiry:
 @strawberry.type
 class InquiryQueries:
   @strawberry.field
+  @login_required
   def inquiries(self, limit: int = 20, offset: int = 0) -> List[GQLInquiry]:
     items = inquiry_service.list_inquiries(limit=limit, offset=offset)
     return [to_gql_inquiry(iq) for iq in items]
