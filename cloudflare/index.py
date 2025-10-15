@@ -38,7 +38,10 @@ class CloudFlare:
       )
     except ClientError as e:
       logging.error(e)
-      return False
+      return self.s3_client.get_object(
+        Bucket=current_app.config.get('BUCKET'),
+        Key='noThumbnail.jpeg'
+      )
 
   def post_object(self, file, name):
     try:
