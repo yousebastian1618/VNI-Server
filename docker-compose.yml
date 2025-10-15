@@ -1,0 +1,11 @@
+name: vni_server_local
+services:
+  web:
+    image: vni_server:local
+    container_name: vni_server_local
+    build: .
+    ports: ["8002:8002"]
+    volumes: [".:/app"]
+    env_file: [.env]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

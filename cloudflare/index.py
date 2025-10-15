@@ -4,7 +4,7 @@ from botocore.exceptions import ClientError
 from botocore.client import Config
 from flask import current_app
 import os
-
+from botocore.config import Config as BotoConfig
 
 class CloudFlare:
   def __init__(self):
@@ -14,7 +14,13 @@ class CloudFlare:
       aws_access_key_id=os.environ.get('CLOUDFLARE_ACCESS_KEY_ID'),
       aws_secret_access_key=os.environ.get('CLOUDFLARE_SECRET_ACCESS_KEY'),
       region_name='auto',
-      config = Config(signature_version="s3v4"),
+      config = BotoConfig(
+        signature_version = "s3v4",
+        s3 = {"addressing_style": "path"},  # force path-style for R2
+        retries = {"max_attempts": 3, "mode": "standard"},
+        connect_timeout = 5,
+        read_timeout = 30,
+      ),
     )
 
   def list_objects(self, key):

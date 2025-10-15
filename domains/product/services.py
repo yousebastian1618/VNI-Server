@@ -53,7 +53,7 @@ def retrieve_image(uid):
   content_type = obj.get("ContentType", "image/jpeg")
   return Response(body, mimetype=content_type)
 
-@product_bp.post('/get-upload-url/<uuid>')
+@product_bp.post('/get-upload-url/<uuid>/')
 def get_upload_url(uuid):
   data = request.get_json(force=True) or {}
   filename = data.get('filename')

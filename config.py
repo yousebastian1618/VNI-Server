@@ -11,12 +11,14 @@ def as_bool(v, default=False):
 
 
 class Config:
-  SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "sqlite:///vni.db")
+  SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
   SQLALCHEMY_TRACK_MODIFICATIONS = False
   JSON_SORT_KEYS = False,
 
-
+  ENV = os.environ.get("ENV")
   BUCKET = os.environ.get("BUCKET")
+  CLIENT = os.environ.get("CLIENT")
+
   CLOUDFLARE_ACCOUNT_ID = os.environ.get("CLOUDFLARE_ACCOUNT_ID")
   CLOUDFLARE_ACCESS_KEY_ID = os.environ.get("CLOUDFLARE_ACCESS_KEY_ID")
   CLOUDFLARE_SECRET_ACCESS_KEY = os.environ.get("CLOUDFLARE_SECRET_ACCESS_KEY")

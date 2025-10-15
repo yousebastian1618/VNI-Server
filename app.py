@@ -19,20 +19,21 @@ from domains.blog.services import blog_bp
 
 def create_app() -> Flask:
   app = Flask(__name__)
-  CORS(
-    app,
-    resources={r"/*": {
-      "origins": ["http://localhost:4202", "http://127.0.0.1:4202"],
-      "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      "allow_headers": ["Content-Type", "Authorization"],
-      "expose_headers": ["Content-Type"],
-    }}
-  )
 
   app.config.from_object(Config)
   db.init_app(app)
   migrate.init_app(app, db)
   mail.init_app(app)
+
+  CORS(
+    app,
+    resources={r"/*": {
+      "origins": [Config.CLIENT],
+      "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      "allow_headers": ["Content-Type", "Authorization"],
+      "expose_headers": ["Content-Type"],
+    }}
+  )
 
   allowed_requests = ['Maintenance', 'Login', '/graphql', 'ToggleMaintenance', 'GetUserByToken']
 
@@ -59,13 +60,17 @@ def create_app() -> Flask:
 
   app.add_url_rule(
     "/graphql",
-    view_func=GraphQLView.as_view("graphql_view", schema=schema, graphiql=True)
+    view_func=GraphQLView.as_view("graphql_view", schema=schema, graphiql=Config.ENV == 'local'),
+    methods=["GET", "POST", "OPTIONS"]
   )
   app.register_blueprint(product_bp)
   app.register_blueprint(blog_bp)
 
   @app.get("/")
   def health():
-    return {"status": "ok", "graphql": "/graphql"}
+    current_env = Config.ENV
+    if current_env == 'local':
+      return {"status": "ok", "graphql": "/graphql"}
+    return {"status": "ok", "e": Config.ENV}
 
   return app

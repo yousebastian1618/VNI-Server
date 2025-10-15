@@ -1,4 +1,5 @@
 import uuid
+from sqlalchemy.dialects.postgresql import UUID
 import sqlalchemy as sa
 from datetime import datetime
 from extensions import db
@@ -8,7 +9,8 @@ from sqlalchemy import String, ForeignKey, Text, DateTime
 class Blog(db.Model):
   __tablename__ = 'blogs'
 
-  id: Mapped[str] = mapped_column(sa.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+  # id: Mapped[str] = mapped_column(sa.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+  id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
   title: Mapped[str] = mapped_column(String(200), nullable=True)
   subtitle: Mapped[str] = mapped_column(String(300), nullable=True)
   author: Mapped[str] = mapped_column(String(100), nullable=True)
@@ -21,8 +23,15 @@ class Blog(db.Model):
 class BlogParagraph(db.Model):
   __tablename__ = "blog_paragraphs"
 
-  id: Mapped[str] = mapped_column(sa.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-  blog_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("blogs.id", ondelete="CASCADE"), nullable=False)
+  # id: Mapped[str] = mapped_column(sa.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+  id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+  # blog_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("blogs.id", ondelete="CASCADE"), nullable=False)
+  blog_id = db.Column(
+    UUID(as_uuid=True),
+    db.ForeignKey("blogs.id", ondelete="CASCADE"),
+    nullable=False,
+    index=True
+  )
   title: Mapped[str] = mapped_column(String(100), nullable=True)
   text: Mapped[str] = mapped_column(Text, nullable=True)
   image: Mapped[str] = mapped_column(Text, nullable=True)
